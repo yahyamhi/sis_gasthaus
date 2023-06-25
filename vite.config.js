@@ -12,7 +12,7 @@ export default defineConfig({
   server: {
     host: true,
     open: true,
-    port: 5000,
+    port: 5001,
   },
   build: {
     outDir: "build",

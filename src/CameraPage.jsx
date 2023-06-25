@@ -1,42 +1,46 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
+import { Layout } from "antd";
+import io from "socket.io-client";
 import "./assets/style/style.scss";
 
-import { Button, Layout, Menu, theme } from "antd";
-import { useState } from "react";
-
-
-
-
-const { Header, Content } = Layout;
+const { Content } = Layout;
 
 const CameraPage = () => {
-    const {
-    token: { colorBgContainer },
-  } = theme.useToken();
-  // const [collapsed, setCollapsed] = useState(false);
-  // const [selectedMenuItem, setSelectedMenuItem] = useState("2");
-  
-  // const {
-  //   token: { colorBgContainer },
-  // } = theme.useToken();
+  const colorBgContainer = "your-background-color";
+  const imgRef = useRef(null);
 
-    return (
-      <Layout className="main-inner-page">
+  useEffect(() => {
+    // Establish a Socket.IO connection
+    const socket = io('http://localhost:5000');
+    
+    // Listen for 'video-frame' event and update image src when a frame is received
+    socket.on('video-frame', (data) => {
+      if (imgRef.current) {
+        imgRef.current.src = 'data:image/jpeg;base64,' + data.frame;
+      }
+    });
 
-        <Content
-          style={{
-            margin: "24px 16px",
-            padding: 24,
-            background: colorBgContainer,
-          }}
-        >
-          <video width="100%" height="100%" controls>
-            <source src="/output_video.mp4" type="video/mp4" />
-            Your browser does not support the video tag.
-          </video>        
-        </Content>
+    // Clean up the Socket.IO connection when the component is unmounted
+    return () => {
+      socket.disconnect();
+    };
+  }, []);
+
+  return (
+    <Layout className="main-inner-page">
+      <Content
+        style={{
+          margin: "24px 16px",
+          padding: 24,
+          background: colorBgContainer,
+        }}
+      >
+        <div data-vjs-player>
+          <img ref={imgRef} alt="video stream"/>
+        </div>
+      </Content>
     </Layout>
-      );
+  );
 };
 
 export default CameraPage;
