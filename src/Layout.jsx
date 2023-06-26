@@ -16,7 +16,7 @@ import AdminPage from "./AdminPage";
 import CameraPage from "./CameraPage";
 import EmergencyPage from "./EmergencyPage";
 import ReportPage from "./ReportPage";
-
+import AccessControl from "./AccessControl";
 
 const { Header, Sider, Content } = Layout;
 
@@ -58,6 +58,10 @@ const LayoutPage = () => {
               icon: <BarChartOutlined />,
               label: "Reports",
             },
+            {
+              key: "/accessControl",
+              label: "Access Control"
+            }
           ]}
         />
       </Sider>
@@ -95,6 +99,7 @@ const LayoutPage = () => {
                <Route path="/cameraPage" element={<CameraPage/>} />
                <Route path="/emergencyPage" element={<EmergencyPage/>} />
                <Route path="/reportPage" element={<ReportPage/>} />
+               <Route path="/accessControl" element={<AccessControl/>} />
           </Routes>
         </Content>
       </Layout>
