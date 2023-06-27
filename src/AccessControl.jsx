@@ -5,7 +5,7 @@ import { initializeApp, getApps, getApp } from "firebase/app";
 import { getDatabase, ref, onValue, set } from "@firebase/database";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyBtxh-i-zP2VCgqdLx7dnfTBHuYkC",
+  apiKey: "AIzaSyBtxh-i-zP2VCgqdLx7dnfTBHuYkCPy8jE",
   authDomain: "deepfusion-f834c.firebaseapp.com",
   databaseURL: "https://deepfusion-f834c-default-rtdb.europe-west1.firebasedatabase.app",
   projectId: "deepfusion-f834c",
@@ -24,10 +24,11 @@ const AccessControl = () => {
   const [selectedRooms, setSelectedRooms] = useState([]);
   const [managedDevice, setManagedDevice] = useState({});
   const [devicePermissions, setDevicePermissions] = useState({});
-  const [deviceName, setDeviceName] = useState("");
+  const [deviceName, setDeviceName] = useState(managedDevice.name);
   const [devices, setDevices] = useState({});
   const [deviceList, setDeviceList] = useState([]);
-
+  const [deviceNameEditable, setDeviceNameEditable] = useState(true);
+  
   useEffect(() => {
     const managePermissionRef = ref(db, 'managePermission');
     onValue(managePermissionRef, (snapshot) => {
@@ -35,7 +36,12 @@ const AccessControl = () => {
       handleDeviceChange(value);
     });
   }, [db]);
-
+  
+  useEffect(() => {
+    setDeviceName(managedDevice.name);
+  }, [managedDevice]);
+  
+  
   useEffect(() => {
     const dbRef = ref(db);
     onValue(dbRef, (snapshot) => {
@@ -50,9 +56,13 @@ const AccessControl = () => {
       });
       setDevices(deviceData);
       setDeviceList(deviceList);
+      // if managedDevice.id exists in the new data, update it
+      if (deviceData[managedDevice.id]) {
+        setManagedDevice(prev => ({...prev, name: deviceData[managedDevice.id].name}));
+      }
     });
-  }, [db]);
-
+  }, [db, managedDevice.id]);
+  
   const handleDeviceChange = (value) => {
     const deviceData = devices[value];
     setManagedDevice({id: value, ...deviceData});
@@ -62,8 +72,10 @@ const AccessControl = () => {
       .filter(([room, access]) => access === 1)
       .map(([room, access]) => room);
     setSelectedRooms(grantedRooms);
+    setDeviceNameEditable(false);  // Set it to not editable
     if (!deviceData.name) {
       setDeviceName("");
+      setDeviceNameEditable(true);  // Make it editable if no name
     } else {
       setDeviceName(deviceData.name);
     }
@@ -74,7 +86,10 @@ const AccessControl = () => {
   };
 
   const saveName = () => {
-    set(ref(db, `${managedDevice.id}/name`), deviceName);
+    set(ref(db, `${managedDevice.id}/name`), deviceName)
+      .then(() => {
+        setDeviceNameEditable(false);  // Hide the text input and button after saving the name
+      });
   };
 
   const handleCheckChange = (checkedValues) => {
@@ -86,7 +101,9 @@ const AccessControl = () => {
     selectedRooms.forEach(room => {
       updates[room] = 1;
     });
-    set(ref(db, `${managedDevice.id}/access`), updates);
+    set(ref(db, `${managedDevice.id}/access`), updates).then(() => {
+      setDevicePermissions(prev => ({ ...prev, ...updates }));  // Update the local state after changes made
+    });
   };
 
   const denyAccess = () => {
@@ -94,7 +111,9 @@ const AccessControl = () => {
     selectedRooms.forEach(room => {
       updates[room] = 0;
     });
-    set(ref(db, `${managedDevice.id}/access`), updates);
+    set(ref(db, `${managedDevice.id}/access`), updates).then(() => {
+      setDevicePermissions(prev => ({ ...prev, ...updates }));  // Update the local state after changes made
+    });
   };
 
   const colorBgContainer = "your-background-color";
@@ -111,32 +130,33 @@ const AccessControl = () => {
         <Row gutter={[16, 16]}>
           <Col span={24}>
             <Card title="Select a Device">
-              <Select
-                placeholder="Select a device"
-                style={{ width: 200 }}
-                onChange={handleDeviceChange}
-                optionLabelProp="label"
-              >
-                {deviceList.map((device, index) => (
-                  <Option value={device.id} label={device.name} key={index}>
-                    <div className="demo-option-label-item">
-                      {device.id}: {device.name}
-                    </div>
-                  </Option>
-                ))}
-              </Select>
+            <Select
+              placeholder="Select a device"
+              style={{ width: 200 }}
+              onChange={handleDeviceChange}
+              optionLabelProp="label"
+            >
+              {deviceList.map((device, index) => (
+                <Option value={device.id} label={device.name} key={index}>
+                  <div className="demo-option-label-item">
+                    {device.name || `Unknown (${device.id})`}
+                  </div>
+                </Option>
+              ))}
+            </Select>
             </Card>
           </Col>
           <Col span={24}>
             <Card title="NFC Device Info">
               <p><strong>ID:</strong> {managedDevice.id}</p>
               <p><strong>Name:</strong> 
-                {!managedDevice.name ? 
+                {!deviceNameEditable ? 
+                  managedDevice.name
+                  : 
                   <>
                     <Input placeholder="Enter device name" value={deviceName} onChange={handleNameChange} />
                     <Button type="primary" onClick={saveName}>Save Name</Button>
-                  </> 
-                  : managedDevice.name
+                  </>
                 }
               </p>
             </Card>
@@ -177,5 +197,5 @@ const AccessControl = () => {
     </Layout>
   );
 };
-
+  
 export default AccessControl;
