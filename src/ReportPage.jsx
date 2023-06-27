@@ -1,81 +1,60 @@
-import React ,{ useState, useEffect } from 'react';
-import "./assets/style/style.scss";
-// import React, { useState, useEffect } from 'react';
+import React from 'react';
+import { Layout, Typography, Divider } from 'antd';
+import { Pie, Line, Bar } from '@ant-design/charts';
 
-import ReactDOM from 'react-dom';
-// import { Column } from '@ant-design/plots';
-import { Line } from '@ant-design/charts';
+const { Content } = Layout;
+const { Title } = Typography;
 
-import { Button, Layout, Menu, theme } from "antd";
-// import { useState } from "react";
-const {   Content } = Layout;
+const pieData = [
+  { type: 'Monday', value: 40, color: '#1890ff' },
+  { type: 'Tuesday', value: 25, color: '#73d13d' },
+  { type: 'Wednesday', value: 20, color: '#ff7875' },
+  { type: 'Thursday', value: 15, color: '#ff9c6e' },
+];
+
+const lineData = [
+  { day: 'Mon', value: 0 },
+  { day: 'Tue', value: 2 },
+  { day: 'Wed', value: 3 },
+  { day: 'Thu', value: 4 },
+  { day: 'Fri', value: 3 },
+  { day: 'Sat', value: 5 },
+  { day: 'Sun', value: 4 },
+];
+
+const barData = [
+  { month: 'Jan', value: 100 },
+  { month: 'Feb', value: 200 },
+  { month: 'Mar', value: 150 },
+  { month: 'Apr', value: 300 },
+];
 
 const ReportPage = () => {
-    const {
-    token: { colorBgContainer },
-  } = theme.useToken();
-  const data = [
-    { year: 'Jan', value: 3 },
-    { year: 'Feb', value: 4 },
-    { year: 'Mar', value: 3 },
-    { year: 'Apr', value: 6 },
-    { year: 'May', value: 4 },
-    
-  ];
-  const config = {
-    data,
-    width: 800,
-    height: 400,
-    autoFit: false,
-    xField: 'year',
-    yField: 'value',
-    point: {
-      size: 5,
-      shape: 'diamond',
-    },
-    label: {
-      style: {
-        fill: '#aaa',
-      },
-    },
-  };
-
-  let chart;
-
-  // Export Image
-  const downloadImage = () => {
-    chart?.downloadImage();
-  };
-
-  // Get chart base64 string
-  const toDataURL = () => {
-    console.log(chart?.toDataURL());
-  };
-
-    return (
-        <Layout className="main-inner-page">
-
-            <Content
-              style={{
-                margin: "24px 16px",
-                padding: 24,
-                background: colorBgContainer,
-              }}
-            >
-             <h1>Report page </h1>
-             <div>
-      <button type="button" onClick={downloadImage} style={{ marginRight: 24 }}>
-        Export Image
-      </button>
-      <button type="button" onClick={toDataURL}>
-        Get base64
-      </button>
-      <Line {...config} onReady={(chartInstance) => (chart = chartInstance)} />
-    </div>
-              
-            </Content>
-        </Layout>
-      );
+  return (
+    <Layout className="main-inner-page">
+      <Content
+        style={{
+          margin: "24px 16px",
+          padding: 24,
+          background: "#fff",
+        }}
+      >
+        <Title level={3}>Reports</Title>
+        <Divider />
+        <Title level={4}>Gender Distribution</Title>
+        <Pie data={pieData} height={200} angleField='value' colorField='type' radius={0.8} />
+        <Divider />
+        <Title level={4}>Weekly Occupancy Rates</Title>
+        <Line data={lineData} height={200} xField='day' yField='value' point={{ size: 2, shape: 'circle' }} line={{ color: '#1890ff' }} />
+        <Divider />
+        <Title level={4}>Daily Guest Count</Title>
+        <Line data={lineData} height={200} xField='day' yField='value' point={{ size: 2, shape: 'circle' }} line={{ color: '#1890ff' }} />
+        <Divider />
+        <Title level={4}>Monthly Meal Count</Title>
+        <Bar data={barData} height={200} xField='month' yField='value' colorField='month' />
+      </Content>
+    </Layout>
+  );
 };
 
 export default ReportPage;
