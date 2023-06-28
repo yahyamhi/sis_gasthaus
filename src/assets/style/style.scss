@@ -5,3 +5,21 @@
   @import 'all/sidebar.scss';
 
 
+  .camera-page {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .camera-feed {
+    width: 100%;
+    height: auto;
+    margin-bottom: 20px;
+  }
+  
+  .camera-feed img {
+    width: 100%;
+    height: auto;
+  }
+  

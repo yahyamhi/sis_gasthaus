@@ -3,6 +3,7 @@ import { Layout, Button, Checkbox, Card, Select, Tag, Space, Row, Col, Input } f
 import "./assets/style/style.scss";
 import { initializeApp, getApps, getApp } from "firebase/app";
 import { getDatabase, ref, onValue, set } from "@firebase/database";
+import { CheckCircleOutlined, StopOutlined } from '@ant-design/icons';
 
 const firebaseConfig = {
   apiKey: "AIzaSyBtxh-i-zP2VCgqdLx7dnfTBHuYkCPy8jE",
@@ -128,68 +129,101 @@ const AccessControl = () => {
         }}
       >
         <Row gutter={[16, 16]}>
-          <Col span={24}>
-            <Card title="Select a Device">
-            <Select
-              placeholder="Select a device"
-              style={{ width: 200 }}
-              onChange={handleDeviceChange}
-              optionLabelProp="label"
-            >
-              {deviceList.map((device, index) => (
-                <Option value={device.id} label={device.name} key={index}>
-                  <div className="demo-option-label-item">
-                    {device.name || `Unknown (${device.id})`}
-                  </div>
-                </Option>
-              ))}
-            </Select>
+          <Col span={12}>
+            <Card title="Select a Device" style={{ height: "100%" }}>
+              <Select
+                placeholder="Select a device"
+                style={{ width: "100%" }}
+                onChange={handleDeviceChange}
+                optionLabelProp="label"
+              >
+                {deviceList.map((device, index) => (
+                  <Option value={device.id} label={device.name} key={index}>
+                    <div className="demo-option-label-item">
+                      {device.name || `Unknown (${device.id})`}
+                    </div>
+                  </Option>
+                ))}
+              </Select>
             </Card>
           </Col>
-          <Col span={24}>
-            <Card title="NFC Device Info">
-              <p><strong>ID:</strong> {managedDevice.id}</p>
-              <p><strong>Name:</strong> 
-                {!deviceNameEditable ? 
+          <Col span={12}>
+            <Card title="NFC Device Info" style={{ height: "100%" }}>
+              <p>
+                <strong>ID:</strong> {managedDevice.id}
+              </p>
+              <p>
+                <strong>Name:</strong>
+                {!deviceNameEditable ? (
                   managedDevice.name
-                  : 
+                ) : (
                   <>
-                    <Input placeholder="Enter device name" value={deviceName} onChange={handleNameChange} />
-                    <Button type="primary" onClick={saveName}>Save Name</Button>
+                    <Input
+                      placeholder="Enter device name"
+                      value={deviceName}
+                      onChange={handleNameChange}
+                    />
+                    <Button type="primary" onClick={saveName}>
+                      Save Name
+                    </Button>
                   </>
-                }
+                )}
               </p>
             </Card>
           </Col>
           <Col span={24}>
             <Card title="Available Access">
-              <Space direction="vertical" style={{ width: '100%' }}>
-                {rooms.map(room => (
-                  <Row key={room}>
-                    <Col span={12}>{room}</Col>
-                    <Col span={12}>
-                      {devicePermissions[room] === 1 ? (
-                        <Tag color="green">Access Granted</Tag>
-                      ) : (
-                        <Tag color="volcano">Access Denied</Tag>
-                      )}
-                    </Col>
-                  </Row>
+              <Space direction="horizontal" style={{ width: "100%" }}>
+                {rooms.map((room) => (
+                  <div
+                    key={room}
+                    style={{ display: "flex", alignItems: "center", margin: "4px" }}
+                  >
+                    {devicePermissions[room] === 1 ? (
+                      <CheckCircleOutlined
+                        style={{ color: "green", marginRight: "4px" }}
+                      />
+                    ) : (
+                      <StopOutlined
+                        style={{ color: "red", marginRight: "4px" }}
+                      />
+                    )}
+                    <span>{room}</span>
+                  </div>
                 ))}
               </Space>
             </Card>
           </Col>
           <Col span={24}>
             <Card title="Room Access Control">
-              <Checkbox.Group options={rooms} value={selectedRooms} onChange={handleCheckChange} />
-              <Space direction="vertical" style={{ width: '100%' }}>
-                <Button type="primary" style={{ marginRight: "8px" }} onClick={grantAccess}>
-                  Grant Access
-                </Button>
-                <Button danger onClick={denyAccess}>
-                  Deny Access
-                </Button>
-              </Space>
+              <Row>
+                <Col span={12}>
+                  <Checkbox.Group
+                    options={rooms}
+                    value={selectedRooms}
+                    onChange={handleCheckChange}
+                  />
+                </Col>
+                <Col
+                  span={12}
+                  style={{
+                    display: "flex",
+                    justifyContent: "flex-end",
+                    alignItems: "center",
+                  }}
+                >
+                  <Button
+                    type="primary"
+                    style={{ marginRight: "8px" }}
+                    onClick={grantAccess}
+                  >
+                    Grant Access
+                  </Button>
+                  <Button danger onClick={denyAccess}>
+                    Deny Access
+                  </Button>
+                </Col>
+              </Row>
             </Card>
           </Col>
         </Row>
