@@ -1,25 +1,24 @@
-  
-  @import 'all/main.scss';
-  @import 'all/navbar.scss';
+.camera-page {
+  display: flex;
+  justify-content: space-around;
+  align-items: flex-start;
+}
 
-  @import 'all/sidebar.scss';
+.camera-feed {
+  width: 70%;
+  height: auto;
+  margin-bottom: 20px;
+}
 
+.camera-feed img {
+  width: 100%;
+  height: auto;
+}
 
-  .camera-page {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-  }
-  
-  .camera-feed {
-    width: 100%;
-    height: auto;
-    margin-bottom: 20px;
-  }
-  
-  .camera-feed img {
-    width: 100%;
-    height: auto;
-  }
-  
+.camera-alerts {
+  width: 20%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+}

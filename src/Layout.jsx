@@ -10,6 +10,7 @@ import {
 } from "@ant-design/icons";
 import { Button, Layout, Menu } from "antd";
 import { NavLink, BrowserRouter as Router, Route, Routes, Navigate, useNavigate } from "react-router-dom";
+import { ExclamationCircleOutlined, FireOutlined, AimOutlined } from '@ant-design/icons';
 
 import AdminPage from "./AdminPage";
 import CameraPage from "./CameraPage";
